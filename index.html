@@ -1,0 +1,259 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.panel{background:#1F2D3D;border-radius:12px;overflow:hidden;max-width:420px;margin:0 auto}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #2C3E50}
+.live-dot{width:9px;height:9px;border-radius:50%;background:#27AE60;flex-shrink:0}
+.live-dot.pulse{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-txt{font-size:11px;color:#7FB3D3;font-weight:500}
+.clock{font-size:11px;color:#AEB6BF;margin-left:4px;font-variant-numeric:tabular-nums}
+.sim-btn{margin-left:auto;font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid #E63027;color:#E63027;background:transparent;cursor:pointer;font-weight:500;transition:all .15s}
+.sim-btn:hover{background:#E63027;color:#fff}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#2C3E50}
+.stat-box{background:#1F2D3D;padding:12px 14px}
+.stat-lbl{font-size:9px;color:#7FB3D3;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.stat-val{font-size:28px;font-weight:500;color:#E8E8E8;line-height:1}
+.stat-val.red{color:#E63027}
+.stat-val.green{color:#27AE60}
+.stat-sub{font-size:9px;color:#566573;margin-top:3px}
+.stat-bar{height:3px;border-radius:2px;margin-top:6px}
+
+.section-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px 6px;border-top:1px solid #2C3E50}
+.section-hdr-txt{font-size:10px;color:#AEB6BF;font-weight:500;text-transform:uppercase;letter-spacing:.06em;flex:1}
+.alert-count{font-size:10px;color:#E63027;font-weight:500;background:#2C0B0B;padding:2px 8px;border-radius:10px}
+
+.notif-feed{padding:0 0 4px;max-height:340px;overflow-y:auto}
+.notif-feed::-webkit-scrollbar{width:3px}
+.notif-feed::-webkit-scrollbar-thumb{background:#2C3E50;border-radius:2px}
+
+.notif-item{display:flex;gap:0;border-bottom:1px solid #253545;transition:background .2s;cursor:pointer}
+.notif-item:hover{background:#253545}
+.notif-item:last-child{border-bottom:none}
+.notif-stripe{width:4px;flex-shrink:0;border-radius:0}
+.notif-inner{padding:10px 12px;flex:1}
+.notif-meta{font-size:9px;color:#566573;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.notif-time{font-variant-numeric:tabular-nums}
+.notif-risk{font-weight:500;color:#7FB3D3}
+.notif-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px}
+.notif-body{display:flex;gap:8px;align-items:flex-start}
+.notif-content{flex:1}
+.notif-title{font-size:11px;font-weight:500;color:#D5D8DC;margin-bottom:3px;line-height:1.4}
+.notif-desc{font-size:10px;color:#7F8C8D;line-height:1.5}
+.notif-response{font-size:10px;color:#AEB6BF;margin-top:5px;padding:5px 8px;background:#253545;border-radius:5px;line-height:1.4;border-left:2px solid #3498DB}
+.notif-response strong{color:#7FB3D3;font-weight:500}
+.badge-crit{font-size:8px;padding:2px 7px;border-radius:10px;background:#2C0B0B;color:#E63027;font-weight:500;border:1px solid #5C1A1A;white-space:nowrap}
+.badge-high{font-size:8px;padding:2px 7px;border-radius:10px;background:#2C1A00;color:#F4A020;font-weight:500;border:1px solid #5C3800;white-space:nowrap}
+.badge-ok{font-size:8px;padding:2px 7px;border-radius:10px;background:#0B2A1A;color:#27AE60;font-weight:500;border:1px solid #1A5C38;white-space:nowrap}
+
+.footer-bar{padding:8px 14px;border-top:1px solid #2C3E50;display:flex;align-items:center;gap:6px}
+.footer-dot{width:7px;height:7px;border-radius:50%;background:#27AE60}
+.footer-txt{font-size:9px;color:#566573}
+.scroll-arrows{display:flex;flex-direction:column;gap:1px}
+.arr-btn{width:16px;height:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#566573;font-size:9px;background:#2C3E50;border-radius:2px}
+.arr-btn:hover{color:#AEB6BF;background:#344}
+</style>
+
+<div class="panel">
+
+  <div class="topbar">
+    <div class="live-dot pulse" id="liveDot"></div>
+    <span class="live-txt">live monitoring</span>
+    <span class="clock" id="clock"></span>
+    <button class="sim-btn" onclick="simulateIncident()">Simulate incident</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-lbl">Mitigation actions active</div>
+      <div class="stat-val" id="actionCount">14</div>
+      <div class="stat-sub">Among top 3 priority risks</div>
+      <div class="stat-bar" style="background:#E63027;width:88%"></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-lbl">System status</div>
+      <div class="stat-val green" id="statusVal">OK</div>
+      <div class="stat-sub" id="statusSub">All systems nominal</div>
+      <div class="stat-bar" style="background:#27AE60;width:100%" id="statusBar"></div>
+    </div>
+  </div>
+
+  <div class="section-hdr">
+    <span class="section-hdr-txt">Notifications</span>
+    <span class="alert-count" id="alertCount">2 alerts</span>
+  </div>
+
+  <div class="notif-feed" id="feed"></div>
+
+  <div class="footer-bar">
+    <div class="footer-dot" id="footerDot"></div>
+    <span class="footer-txt" id="footerTxt">No active alert · All systems nominal</span>
+    <div style="margin-left:auto;display:flex;flex-direction:column;gap:2px">
+      <div class="arr-btn" onclick="scrollFeed(-60)">▲</div>
+      <div class="arr-btn" onclick="scrollFeed(60)">▼</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALERTS = [
+  {
+    id:"A1", time:null, risk:"R7", stripe:"#E63027",
+    icon:"🔒", iconBg:"#2C0B0B",
+    title:"Single-point wire approval gap — reminder",
+    desc:"No dual-authorisation policy is enforced on the banking platform. Structural risk active.",
+    response:"Request forwarded to Finance Director · Banking platform configuration update requested · Estimated delay: 48h",
+    badge:"CRITICAL", badgeClass:"badge-crit", active:true
+  },
+  {
+    id:"A2", time:null, risk:"R1", stripe:"#E63027",
+    icon:"🎙", iconBg:"#2C0B0B",
+    title:"Deepfake voice pattern detected on internal call",
+    desc:"AI voice analysis flagged anomaly on an inbound call to the Finance department. Call was recorded and paused.",
+    response:"CISO notified · Call recording secured · Finance employee briefed · Verification callback initiated",
+    badge:"CRITICAL", badgeClass:"badge-crit", active:true
+  },
+  {
+    id:"A3", time:null, risk:"R2", stripe:"#F4A020",
+    icon:"📧", iconBg:"#2C1A00",
+    title:"LLM-generated phishing attempt detected",
+    desc:"AI email filter flagged a spear-phishing email targeting IT admin. Email quarantined automatically.",
+    response:"Email quarantined · Sender domain blocked · IT admin notified · No credential compromise detected",
+    badge:"HIGH", badgeClass:"badge-high", active:false
+  },
+  {
+    id:"A4", time:null, risk:"R5", stripe:"#1A5276",
+    icon:"📋", iconBg:"#0B1A2C",
+    title:"AI incident response playbook — drill scheduled",
+    desc:"Tabletop exercise for deepfake + phishing scenarios confirmed for all departments.",
+    response:"Finance, IT, Operations, Legal confirmed · Date: 15/04/2026 · Facilitator: CISO",
+    badge:"INFO", badgeClass:"badge-ok", active:false
+  },
+];
+
+let incidents = [];
+let simCount = 0;
+
+function nowStr(){
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0')+':'+
+         d.getMinutes().toString().padStart(2,'0')+':'+
+         d.getSeconds().toString().padStart(2,'0');
+}
+
+function updateClock(){
+  const d = new Date();
+  document.getElementById('clock').textContent =
+    d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function buildFeed(){
+  const feed = document.getElementById('feed');
+  feed.innerHTML='';
+  const all = [...incidents, ...ALERTS.map((a,i)=>{
+    if(!a.time) a.time = nowStr().replace(/\d\d$/,String(Math.max(0,parseInt(nowStr().slice(-2))-i*37%60)).padStart(2,'0'));
+    return a;
+  })];
+  if(all.length===0){
+    feed.innerHTML='<div style="padding:16px 14px;font-size:10px;color:#566573;text-align:center">No alerts · All systems nominal</div>';
+    return;
+  }
+  all.forEach(a=>{
+    const div=document.createElement('div');
+    div.className='notif-item';
+    div.innerHTML=`
+      <div class="notif-stripe" style="background:${a.stripe}"></div>
+      <div class="notif-inner">
+        <div class="notif-meta">
+          <span class="notif-time">${a.time}</span>
+          <span>·</span>
+          <span class="notif-risk">Risk : ${a.risk}</span>
+          ${a.active?'<span style="width:6px;height:6px;border-radius:50%;background:#E63027;display:inline-block;animation:pulse 1s infinite"></span>':''}
+        </div>
+        <div class="notif-body">
+          <div class="notif-icon" style="background:${a.iconBg}">${a.icon}</div>
+          <div class="notif-content">
+            <div class="notif-title">${a.title}</div>
+            <div class="notif-desc">${a.desc}</div>
+            <div style="margin-top:5px"><span class="${a.badgeClass}">${a.badge}</span></div>
+            <div class="notif-response"><strong>Dashboard response :</strong> ${a.response}</div>
+          </div>
+        </div>
+      </div>`;
+    feed.appendChild(div);
+  });
+  updateAlertCount(all);
+}
+
+function updateAlertCount(all){
+  const active = all.filter(a=>a.active||a.badgeClass==='badge-crit').length;
+  document.getElementById('alertCount').textContent = active+' alert'+(active!==1?'s':'');
+}
+
+const SIM_SCENARIOS = [
+  {risk:"R3",stripe:"#E63027",icon:"☠",iconBg:"#2C0B0B",
+   title:"ML model accuracy degradation detected",
+   desc:"Anomaly detection model accuracy dropped 12% in 6h. Possible data poisoning attempt on SCADA pipeline.",
+   response:"Data Science team alerted · Training pipeline frozen · Last clean snapshot identified · RTO target: 4h · ANSSI notification prepared",
+   badge:"CRITICAL",badgeClass:"badge-crit",active:true},
+  {risk:"R4",stripe:"#E63027",icon:"⚡",iconBg:"#2C0B0B",
+   title:"IT-to-OT lateral movement attempt blocked",
+   desc:"SOC detected unauthorised probe from corporate IT network towards SCADA subnet. Firewall rule triggered.",
+   response:"Firewall rule activated · OT network isolated · CISO notified · Vendor access revoked · ANSSI notification: 24h window started",
+   badge:"CRITICAL",badgeClass:"badge-crit",active:true},
+  {risk:"R6",stripe:"#F4A020",icon:"⚖",iconBg:"#2C1A00",
+   title:"GDPR 72h window at risk — breach detected",
+   desc:"Personal data exfiltration confirmed via phishing compromise. 72h CNIL notification window started at 14:02.",
+   response:"DPO notified · CNIL template activated · Time remaining: 58h 41min · Legal retainer contacted · Data subjects identified",
+   badge:"HIGH",badgeClass:"badge-high",active:true},
+  {risk:"R2",stripe:"#F4A020",icon:"🔑",iconBg:"#2C1A00",
+   title:"Privileged credential compromise attempt",
+   desc:"Brute-force attack on IT admin account detected. MFA hardware token blocked the attempt.",
+   response:"Account temporarily locked · IT admin notified · Credential reset initiated · Source IP blocked · Incident logged",
+   badge:"HIGH",badgeClass:"badge-high",active:false},
+];
+
+function simulateIncident(){
+  const s = SIM_SCENARIOS[simCount % SIM_SCENARIOS.length];
+  simCount++;
+  const inc = {...s, id:"SIM"+simCount, time:nowStr()};
+  incidents.unshift(inc);
+  document.getElementById('statusVal').textContent='ALERT';
+  document.getElementById('statusVal').className='stat-val red';
+  document.getElementById('statusSub').textContent='Incident simulated — '+inc.risk;
+  document.getElementById('statusBar').style.background='#E63027';
+  document.getElementById('statusBar').style.width='60%';
+  document.getElementById('footerDot').style.background='#E63027';
+  document.getElementById('footerTxt').textContent='Active incident — '+inc.risk+' — '+nowStr();
+  document.getElementById('liveDot').style.background='#E63027';
+  buildFeed();
+  setTimeout(()=>{
+    if(simCount%2===0){
+      document.getElementById('statusVal').textContent='OK';
+      document.getElementById('statusVal').className='stat-val green';
+      document.getElementById('statusSub').textContent='Incident contained';
+      document.getElementById('statusBar').style.background='#27AE60';
+      document.getElementById('statusBar').style.width='100%';
+      document.getElementById('footerDot').style.background='#27AE60';
+      document.getElementById('footerTxt').textContent='Incident contained · Monitoring resumed';
+      document.getElementById('liveDot').style.background='#27AE60';
+    }
+  }, 8000);
+}
+
+function scrollFeed(px){
+  document.getElementById('feed').scrollBy({top:px,behavior:'smooth'});
+}
+
+updateClock();
+setInterval(updateClock,1000);
+buildFeed();
+
+setInterval(()=>{
+  const ac = document.getElementById('actionCount');
+  const v = parseInt(ac.textContent)||14;
+  if(Math.random()<0.15) ac.textContent = Math.max(12,Math.min(17,v+(Math.random()<0.5?1:-1)));
+},4000);
+</script>
