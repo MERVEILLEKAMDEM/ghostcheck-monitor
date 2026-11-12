@@ -1,0 +1,8 @@
+Risk ID,Risk Name,PESTLEO Source,Probability,Severity,Criticality,Rating,Mitigation Actions
+R1,CEO Deepfake Voice Fraud,Political / Social / Technological,4,4,16,CRITICAL,7
+R2,LLM-Powered Spear Phishing,Technological / Social,4,3,12,CRITICAL,7
+R3,AI Data Poisoning OT/IT,Technological / Environmental,3,4,12,CRITICAL,7
+R4,OT/IT Physical Infrastructure Attack,Technological / Environmental / Geopolitical,2,4,8,MEDIUM,5
+R5,No AI Incident Response Protocol,Operational,4,3,12,CRITICAL,7
+R6,GDPR / NIS2 Compliance Breach,Legal,3,3,9,HIGH,7
+R7,Single-Point Wire Transfer Approval Failure,Operational / Social,4,4,16,CRITICAL,5
