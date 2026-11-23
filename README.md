@@ -49,7 +49,7 @@ Le plan est construit autour des délais de notification **NIS2 (24 h, ANSSI)** 
 | [`index.html`](index.html) | **Tableau de bord interactif** (HTML/CSS/JS, sans dépendance) : KPI, matrice de criticité, classement des risques, détail par risque et menaces par facteur PESTLEO. |
 | [`risk_register.csv`](risk_register.csv) | Registre des risques (identifiant, source PESTLEO, probabilité, gravité, score, niveau, nombre d'actions). |
 
-**Voir le tableau de bord en ligne** : https://merveillekamdem.github.io/ghostcheck-monitor/ (une fois GitHub Pages activé : Settings → Pages → branche `main`). Sinon, télécharger le dépôt et ouvrir `index.html` dans un navigateur.
+**Voir le tableau de bord en ligne** : https://merveillekamdem.github.io/ghostcheck-monitor/
 
 ## 👤 Mon rôle : « Hacker »
 
